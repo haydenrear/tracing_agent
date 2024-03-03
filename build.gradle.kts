@@ -45,6 +45,11 @@ dependencies {
     annotationProcessor(project(":tracing_apt")) {
         exclude("org.junit")
     }
+
+    implementation("org.springframework.boot:spring-boot-starter-integration")
+    implementation("org.springframework.integration:spring-integration-core")
+    implementation("org.springframework.integration:spring-integration-http")
+
 }
 
 tasks.bootJar {

@@ -2,6 +2,8 @@ package com.hayden.tracing_agent.service;
 
 import com.hayden.tracing_agent.TracingAgent;
 import com.hayden.tracing_agent.config.TracingProperties;
+import com.hayden.tracing_agent.model.TracingDecision;
+import com.hayden.tracing_agent.model.TracingMessage;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ public class DynamicTracingService {
     private final TraceEventSource traceEventSource;
     private final TracingAggregator tracingAggregator;
     private final TracingProperties tracingProperties;
+    private final TracingSync tracingSync;
 
     @PostConstruct
     public void startTracing() {
@@ -26,6 +29,10 @@ public class DynamicTracingService {
         Flux.from(traceEventSource.tracingEvents())
                 .subscribe(tracingProcessor::onNext);
 
+        // tracing events need to be synced across
+        Flux.from(traceEventSource.tracingEvents())
+                .subscribe(this::pushIfNotLocal);
+
         Flux.from(tracingProcessor)
                 .subscribe(tracingStream::next);
 
@@ -33,7 +40,12 @@ public class DynamicTracingService {
                 .buffer(tracingProperties.getSize())
                 .map(tracingAggregator::decide)
                 .doOnNext(tracingProcessor::feedback)
+                .filter(this::pushIfNotLocal)
                 .subscribe(TracingAgent::instrumentDecision);
+    }
+
+    private boolean pushIfNotLocal(TracingMessage t) {
+        return !t.isLocal() || tracingSync.push(t);
     }
 
 }

@@ -1,13 +1,13 @@
 package com.hayden.tracing_agent.service;
 
 import com.hayden.tracing_agent.model.TracingDecision;
-import com.hayden.tracing_agent.model.TracingEvent;
+import com.hayden.tracing_agent.model.TracingMessage;
 import org.reactivestreams.Processor;
 
 /**
  * Plugin point for Anomaly Detection algorithms
  */
-public interface TracingProcessor extends Processor<TracingEvent, TracingDecision> {
+public interface TracingProcessor extends Processor<TracingMessage, TracingDecision> {
 
     /**
      * Wait until the decision is made to update the internal state, if any.
