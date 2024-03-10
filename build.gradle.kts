@@ -7,6 +7,7 @@ tasks.register("prepareKotlinBuildScriptModel")
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-docker-compose")
+
     implementation("io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:2.1.0-alpha")
     implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-api:2.1.0")
     implementation("io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter:1.22.1-alpha")
@@ -24,6 +25,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-aop")
+
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.liquibase:liquibase-core")
 
@@ -42,11 +44,13 @@ dependencies {
 
     implementation(project(":utilitymodule"))
 
+    implementation(project(":tracing_apt"))
     annotationProcessor(project(":tracing_apt")) {
         exclude("org.junit")
     }
 
     implementation("org.springframework.boot:spring-boot-starter-integration")
+    implementation("org.springframework.integration:spring-integration-kafka")
     implementation("org.springframework.integration:spring-integration-core")
     implementation("org.springframework.integration:spring-integration-http")
 

@@ -1,4 +1,4 @@
-package com.hayden.tracing_agent.service;
+package com.hayden.tracing_agent.messaging;
 
 import com.hayden.tracing_agent.model.TracingDecision;
 
