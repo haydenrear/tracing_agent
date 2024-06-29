@@ -18,17 +18,17 @@ import org.springframework.stereotype.Component;
 public class TraceMessageHandler implements MessageHandler {
 
     private final TracingBroadcasterHandle traceEventSource;
-    private final TracingTransform tracingTransform;
+//    private final TracingTransform tracingTransform;
 
     @Override
     public void handleMessage(@NotNull Message<?> message) throws MessagingException {
-        tracingTransform.from(message)
-                .ifPresentOrElse(
-                        traceEventSource::next,
-                        () -> log.warn(
-                                "Received unknown message on tracing message handler {}.",
-                                message.getPayload().getClass().getSimpleName()
-                        )
-                );
+//        tracingTransform.from(message)
+//                .ifPresentOrElse(
+//                        traceEventSource::next,
+//                        () -> log.warn(
+//                                "Received unknown message on tracing message handler {}.",
+//                                message.getPayload().getClass().getSimpleName()
+//                        )
+//                );
     }
 }

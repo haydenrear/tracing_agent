@@ -28,18 +28,18 @@ public class TracingStreamHandle implements TracingStream {
     @Delegate
     private final TracingBroadcasterHandle tracingBroadcaster;
     private final TracingProperties tracingProperties;
-    private final TracingAggregator aggregators;
+//    private final TracingAggregator aggregators;
 
     @PostConstruct
     public void setup() {
-        Flux.from(tracingBroadcaster.messages())
-                .subscribe(tm -> processors.forEach(tp -> tp.next(tm)));
-        Flux.fromIterable(processors)
-                .flatMap(t -> Flux.from(t.decisions()))
-                .buffer(tracingProperties.getSize())
-                .map(aggregators::decide)
-                .doOnNext(d -> processors.forEach(tp -> tp.feedback(d)))
-                .subscribe(decision -> tracingDecisions.emitNext(decision, (t1, tw) -> true));
+//        Flux.from(tracingBroadcaster.messages())
+//                .subscribe(tm -> processors.forEach(tp -> tp.next(tm)));
+//        Flux.fromIterable(processors)
+//                .flatMap(t -> Flux.from(t.decisions()))
+//                .buffer(tracingProperties.getSize())
+//                .map(aggregators::decide)
+//                .doOnNext(d -> processors.forEach(tp -> tp.feedback(d)))
+//                .subscribe(decision -> tracingDecisions.emitNext(decision, (t1, tw) -> true));
     }
 
     @Override

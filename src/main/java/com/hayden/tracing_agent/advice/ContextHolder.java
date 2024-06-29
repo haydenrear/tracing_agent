@@ -3,6 +3,8 @@ package com.hayden.tracing_agent.advice;
 import com.hayden.tracing.observation_aspects.MonitoringTypes;
 import com.hayden.tracing.observation_aspects.ObservationBehavior;
 import com.hayden.tracing_agent.service.DynamicTracingService;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -31,8 +33,15 @@ public class ContextHolder {
     }
 
     private static void setContext() {
-        if (applicationContext == null)
-            applicationContext = new AnnotationConfigApplicationContext("com.hayden.tracing", "com.hayden.tracing_agent", "com.hayden.tracing_apt");
+        if (applicationContext == null) {
+            applicationContext = new AnnotationConfigServletWebServerApplicationContext(
+                    "com.hayden.tracing",
+                    "com.hayden.tracing_agent",
+                    "com.hayden.tracing_apt"
+            );
+            AgentAdvice.setApplicationContext(applicationContext);
+        }
+
     }
 
     public static ObservationBehavior observationBehavior() {

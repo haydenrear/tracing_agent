@@ -1,101 +1,85 @@
 package com.hayden.tracing_agent;
 
+import com.hayden.tracing.NoAgent;
 import com.hayden.tracing_agent.advice.AgentAdvice;
 import com.hayden.tracing_agent.advice.ContextHolder;
-import com.hayden.tracing_agent.config.TracingAgentConfig;
-import com.hayden.tracing_agent.config.TracingProperties;
 import com.hayden.tracing_agent.model.TracingDecision;
-import com.hayden.tracing_agent.model.TracingEvent;
+import com.hayden.tracing_agent.service.DynamicTracingService;
+import jakarta.annotation.Nullable;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
-import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.dynamic.DynamicType;
-import net.bytebuddy.implementation.DefaultMethodCall;
+import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.jar.asm.commons.ClassRemapper;
 import net.bytebuddy.matcher.ElementMatchers;
-import net.bytebuddy.utility.JavaModule;
-import org.drools.model.functions.Block0;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
+import java.lang.instrument.UnmodifiableClassException;
 import java.security.ProtectionDomain;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
+@SpringBootApplication
+@EnableWebMvc
 public class TracingAgent {
 
     private static Instrumentation instrumentation;
+    private static Instrumentation byteBuddyInstrumentation;
+    private static DynamicTracingService dynamicTracingService;
 
     @SneakyThrows
     public static void premain(String agentArgs, Instrumentation inst) {
-        log.info("Loading dynamic tracing agent with args {}.", agentArgs);
+        log.info("Loading dynamic tracing agent with args {} and {}.", agentArgs, inst);
+        var tracing = ContextHolder.getTracingService();
         instrumentation = inst;
-        ContextHolder.getTracingService();
+        byteBuddyInstrumentation = ByteBuddyAgent.install();
     }
 
     public static void instrumentClass(String className) {
+        instrumentClass(className, null);
+    }
+
+    public static void instrumentClass(String className, @Nullable String methodName) {
         log.info("Instrumenting class {}.", className);
-        if (copyClassToCache(className))
-            new AgentBuilder.Default()
-                    .type(ElementMatchers.named(className))
-                    .transform((builder, typeDescription, classLoader, module, protectionDomain) -> builder
-                            .visit(Advice.to(AgentAdvice.class)
-                            .on(ElementMatchers.named(className)))
-                    )
-                    .installOn(instrumentation);
-        else log.error("Could not instrument class {}.", className);
+        var methodMatcher = Optional.ofNullable(methodName)
+                .map(m -> ElementMatchers.not(ElementMatchers.isAnnotatedWith(NoAgent.class))
+                        .and(ElementMatchers.named(m)))
+                .orElseGet(ElementMatchers::any);
+        new AgentBuilder.Default()
+                // TODO: Could add @Stateless somehow with spring ctx, probably not...
+                .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
+                .with(AgentBuilder.Listener.StreamWriting.toSystemOut())
+                .type(ElementMatchers.named(className))
+                .and(ElementMatchers.not(ElementMatchers.isAnnotatedWith(NoAgent.class)))
+                .transform((builder, typeDescription, classLoader, module, protectionDomain) -> builder
+                        .method(methodMatcher)
+                        .intercept(Advice.to(AgentAdvice.class))
+                )
+                .installOn(byteBuddyInstrumentation);
     }
 
-    public static boolean copyClassToCache(String className) {
-        try(var inputStream = TracingAgent.class.getClassLoader().getResourceAsStream("classpath:" + className)) {
-            if (inputStream != null) {
-                FileCopyUtils.copy(inputStream.readAllBytes(), getClassCache(className));
-                return true;
-            }
-        } catch (IOException e) {
-            log.error("Could not load {} with error {}.", className, e.getMessage());
-        }
-        return false;
-    }
-
-    public static Optional<byte[]> loadClassFromCache(String className) {
-        File getClassCache = getClassCache(className);
-        try {
-            return Optional.of(FileCopyUtils.copyToByteArray(getClassCache));
-        } catch (IOException e) {
-            log.error("Could not load {} with error {}.", className, e.getMessage());
-        }
-        return Optional.empty();
-    }
-
-    @NotNull
-    private static File getClassCache(String className) {
-        return new File("build/cache/%s".formatted(className));
-    }
 
     public static void revertInstrumentation(String toRevert) {
-        // Use the Instrumentation API to redefine/reload the class
-        // with the original bytecode
-        log.info("Reverting instrumentation for class {}.", toRevert);
-        instrumentation.addTransformer(new ClassFileTransformer() {
-            @Override
-            public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
-                                    ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-                return loadClassFromCache(toRevert)
-                        .orElse(classfileBuffer);
-            }
-        }, true);
+        // handled in tracing decision in context...
     }
 
     public static void instrumentDecision(TracingDecision tracingDecision) {
