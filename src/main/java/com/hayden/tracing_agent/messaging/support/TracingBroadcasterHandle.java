@@ -3,6 +3,7 @@ package com.hayden.tracing_agent.messaging.support;
 import com.hayden.tracing_agent.messaging.TracingBroadcaster;
 import com.hayden.tracing_agent.model.TracingMessage;
 import org.reactivestreams.Publisher;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Sinks;
 
@@ -20,4 +21,8 @@ public class TracingBroadcasterHandle implements TracingBroadcaster {
         return tracingMessages.asFlux();
     }
 
+    @Override
+    public TracingMessage processMessage(Message<?> message) {
+        return this.processMessage(message);
+    }
 }

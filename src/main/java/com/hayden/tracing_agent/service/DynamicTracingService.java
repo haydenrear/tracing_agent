@@ -23,15 +23,19 @@ public class DynamicTracingService {
         //      source                 process                aggregate             publish          decide               feedback
         // the TracingEventSource -> TracingProcessor -> TracingAggregator -> TracingStream -> TracingAggregator -> TracingProcessor
         Flux.from(tracingStream.decisions())
-                .map(t -> {
+                .subscribe(t -> {
                     switch(t) {
-                        case TracingDecision.AddAdvice a -> tracingFlags.add(a.className());
-                        case TracingDecision.RemoveAdvice r -> tracingFlags.remove(r.className());
+                        case TracingDecision.AddAdvice a -> {
+                            tracingFlags.add(a.className());
+                            TracingAgent.instrumentClass(a.className(), a.functionName());
+                        }
+                        case TracingDecision.RemoveAdvice r -> {
+                            tracingFlags.remove(r.className());
+                            TracingAgent.registerRevertInstrumentation(r.className(), r.functionName());
+                        }
                         default -> log.error("Received unknown tracing decision {}.", t.getClass().getSimpleName());
                     }
-                    return t;
-                })
-                .subscribe(TracingAgent::instrumentDecision);
+                });
     }
 
 

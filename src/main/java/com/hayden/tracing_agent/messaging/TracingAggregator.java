@@ -7,6 +7,6 @@ import java.util.Collection;
 public interface TracingAggregator {
 
 
-    TracingDecision decide(Collection<TracingDecision> tracingDecisions);
+    Collection<TracingDecision> decide(Collection<TracingDecision> tracingDecisions);
 
 }

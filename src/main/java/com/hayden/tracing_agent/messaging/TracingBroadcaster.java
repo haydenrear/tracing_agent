@@ -2,8 +2,9 @@ package com.hayden.tracing_agent.messaging;
 
 import com.hayden.tracing_agent.model.TracingMessage;
 import org.reactivestreams.Publisher;
+import org.springframework.integration.handler.MessageProcessor;
 
-public interface TracingBroadcaster {
+public interface TracingBroadcaster extends MessageProcessor<TracingMessage> {
 
     void next(TracingMessage tracingMessage);
 

@@ -1,10 +1,10 @@
 package com.hayden.tracing_agent.messaging.support;
 
+import com.hayden.tracing_agent.config.KafkaTracingProperties;
 import com.hayden.tracing_agent.config.TracingProperties;
 import com.hayden.tracing_agent.messaging.TracingAggregator;
 import com.hayden.tracing_agent.messaging.TracingProcessor;
 import com.hayden.tracing_agent.messaging.TracingStream;
-import com.hayden.tracing_agent.messaging.support.TracingBroadcasterHandle;
 import com.hayden.tracing_agent.model.TracingDecision;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -28,18 +28,18 @@ public class TracingStreamHandle implements TracingStream {
     @Delegate
     private final TracingBroadcasterHandle tracingBroadcaster;
     private final TracingProperties tracingProperties;
-//    private final TracingAggregator aggregators;
+    private final TracingAggregator aggregators;
 
     @PostConstruct
     public void setup() {
-//        Flux.from(tracingBroadcaster.messages())
-//                .subscribe(tm -> processors.forEach(tp -> tp.next(tm)));
-//        Flux.fromIterable(processors)
-//                .flatMap(t -> Flux.from(t.decisions()))
-//                .buffer(tracingProperties.getSize())
-//                .map(aggregators::decide)
-//                .doOnNext(d -> processors.forEach(tp -> tp.feedback(d)))
-//                .subscribe(decision -> tracingDecisions.emitNext(decision, (t1, tw) -> true));
+        Flux.from(tracingBroadcaster.messages())
+                .subscribe(tm -> processors.forEach(tp -> tp.next(tm)));
+        Flux.fromIterable(processors)
+                .flatMap(t -> Flux.from(t.decisions()))
+                .buffer(tracingProperties.getSize())
+                .flatMap(l -> Flux.fromIterable(aggregators.decide(l)))
+                .doOnNext(d -> processors.forEach(tp -> tp.feedback(d)))
+                .subscribe(decision -> tracingDecisions.emitNext(decision, (t1, tw) -> true));
     }
 
     @Override

@@ -4,11 +4,11 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@ConfigurationProperties(prefix = "tracing-agent")
+import java.util.List;
+
+@ConfigurationProperties(prefix = "tracing-agent.kafka")
 @Component
 @Data
-public class TracingProperties {
-
-    int size;
-
+public class KafkaTracingProperties {
+    List<String> tracingTopics;
 }

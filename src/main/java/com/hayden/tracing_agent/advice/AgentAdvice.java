@@ -63,7 +63,7 @@ public class AgentAdvice {
 //    }
 
     @Advice.OnMethodEnter
-    static long invokeBeforeEnterMethod(
+    public static long invokeBeforeEnterMethod(
             @Advice.This Object thiz,
             @Advice.Origin String method,
             @Advice.Origin("#s") Method origin,
@@ -73,14 +73,15 @@ public class AgentAdvice {
             System.out.printf("is enabled!%n");
 //            return System.currentTimeMillis();
         }
+
         System.out.printf("Method invoked before enter method by: %s and %s and %s%n", method, thiz.getClass(), origin);
 
-        return System.currentTimeMillis();
 //        return 0L;
+        return System.currentTimeMillis();
     }
 
-    @Advice.OnMethodExit
-    static void invokeAfterExitMethod(
+    @Advice.OnMethodExit(inline = false)
+    public static void invokeAfterExitMethod(
             @Advice.Origin String method,
             @Advice.Enter long startTime,
             @Advice.Return Object returnValue
@@ -89,18 +90,18 @@ public class AgentAdvice {
         System.out.printf("%s is the ret%n", returnValue);
     }
 
-    @SneakyThrows
-    @RuntimeType
-    public static Object intercept(@Origin Method method,
-                                   @SuperCall Callable<?> callable) {
-        long start = System.currentTimeMillis();
-        System.out.println("intercepted");
-        log.info("intercepting on {}.", method.getName());
-        try {
-            return callable.call();
-        } finally {
-            System.out.println(method + " took " + (System.currentTimeMillis() - start));
-        }
-    }
+//    @SneakyThrows
+//    @RuntimeType
+//    public static Object intercept(@Origin Method method,
+//                                   @SuperCall Callable<?> callable) {
+//        long start = System.currentTimeMillis();
+//        System.out.println("intercepted");
+//        log.info("intercepting on {}.", method.getName());
+//        try {
+//            return callable.call();
+//        } finally {
+//            System.out.println(method + " took " + (System.currentTimeMillis() - start));
+//        }
+//    }
 
 }

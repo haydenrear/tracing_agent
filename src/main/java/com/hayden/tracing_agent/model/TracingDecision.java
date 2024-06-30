@@ -3,9 +3,15 @@ package com.hayden.tracing_agent.model;
 
 public interface TracingDecision extends TracingMessage {
 
-    record AddAdvice(String className) implements TracingDecision {}
+    String className();
+    String functionName();
 
-    record RemoveAdvice(String className) implements TracingDecision{}
+    default String tracingId() {
+        return "%s.%s".formatted(className(), functionName());
+    }
 
+    record AddAdvice(String className, String functionName) implements TracingDecision {}
+
+    record RemoveAdvice(String className, String functionName) implements TracingDecision{}
 
 }
