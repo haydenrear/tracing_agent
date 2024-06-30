@@ -74,8 +74,7 @@ public class TracingAgent {
                                     .visit(Advice.to(AgentAdvice.class).on(methodMatcher))
                                     .make()) {
                                 b.load(c.getClassLoader(), ClassReloadingStrategy.of(byteBuddyInstrumentation));
-                            } catch (
-                                    Exception e) {
+                            } catch (Exception e) {
                                 log.error("Error instrumenting class: {}.", e.getMessage());
                             }
                         },
