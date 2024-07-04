@@ -1,17 +1,18 @@
 package com.hayden.tracing_agent.advice;
 
-import com.hayden.tracing.observation_aspects.MonitoringTypes;
-import com.hayden.tracing.observation_aspects.ObservationBehavior;
+import com.hayden.tracing_apt.observation_aspects.MonitoringTypes;
+import com.hayden.tracing_apt.observation_aspects.ObservationBehavior;
 import com.hayden.tracing_agent.service.DynamicTracingService;
+import com.hayden.utilitymodule.stream.StreamUtil;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class ContextHolder {
 
@@ -28,7 +29,17 @@ public class ContextHolder {
 
     private static ApplicationContext setContext() {
         if (!applicationContext.containsKey(TRACING_AGENT)) {
-            var applicationContext = new AnnotationConfigServletWebServerApplicationContext(TRACING_PACKAGES);
+            var pkgs = Optional.ofNullable(System.getenv().get("TRACING_PROVIDERS"))
+                    .map(s -> StreamUtil.StreamBuilderDelegate.builder()
+                            .addAllStreams(Arrays.stream(s.split(",")), Arrays.stream(TRACING_PACKAGES))
+                            .build()
+                            .map(Object::toString))
+                    .or(() -> Optional.of(Arrays.stream(TRACING_PACKAGES)))
+                    .stream()
+                    .flatMap(s -> s)
+                    .toArray(String[]::new);
+
+            var applicationContext = new AnnotationConfigServletWebServerApplicationContext(pkgs);
             AgentAdvice.setApplicationContext(applicationContext);
             return applicationContext;
         }

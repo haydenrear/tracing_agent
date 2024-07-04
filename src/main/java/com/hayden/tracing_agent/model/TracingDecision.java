@@ -12,6 +12,6 @@ public interface TracingDecision extends TracingMessage {
 
     record AddAdvice(String className, String functionName) implements TracingDecision {}
 
-    record RemoveAdvice(String className, String functionName) implements TracingDecision{}
+    record RemoveAdvice(String className, String functionName) implements TracingDecision {}
 
 }

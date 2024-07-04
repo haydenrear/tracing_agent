@@ -1,6 +1,6 @@
 package com.hayden.tracing_agent.service;
 
-import com.hayden.tracing.flags.TracingFlags;
+import com.hayden.tracing_apt.flags.TracingFlags;
 import com.hayden.tracing_agent.TracingAgent;
 import com.hayden.tracing_agent.messaging.TracingStream;
 import com.hayden.tracing_agent.model.TracingDecision;
