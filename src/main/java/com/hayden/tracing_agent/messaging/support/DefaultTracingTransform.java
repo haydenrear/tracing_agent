@@ -11,6 +11,7 @@ import java.util.Optional;
 public class DefaultTracingTransform implements TracingTransform {
     @Override
     public Optional<TracingMessage> from(Message<?> message) {
-        return Optional.of(message.getPayload()).flatMap(e -> e instanceof TracingMessage ? Optional.of((TracingMessage) e) : Optional.empty());
+        return Optional.of(message.getPayload())
+                .flatMap(e -> e instanceof TracingMessage ? Optional.of((TracingMessage) e) : Optional.empty());
     }
 }

@@ -27,15 +27,12 @@ public class TestIntegrationConfig {
         return IntegrationFlow.from(
                         Http.inboundGateway("/test-integration")
                                 .requestMapping(r -> r.methods(HttpMethod.GET))
-                                .replyChannel("messageChannel")
+                                .replyChannel(IntegrationConfig.MESSAGE_CHANNEL)
                 )
-                .handle(new ServiceActivatingHandler(new MessageProcessor<Object>() {
-                    @Override
-                    public Object processMessage(Message<?> message) {
-                        log.info("Handling!");
-                        TracingAgent.instrumentClass("com.hayden.tracing.TestClass", "test");
-                        return "yes!";
-                    }
+                .handle(new ServiceActivatingHandler(message -> {
+                    log.info("Handling!");
+                    TracingAgent.instrumentClass("com.hayden.tracing.TestClass", "test");
+                    return "yes!";
                 }))
                 .get();
     }

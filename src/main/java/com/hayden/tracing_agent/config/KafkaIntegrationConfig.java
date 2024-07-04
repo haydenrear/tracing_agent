@@ -78,10 +78,14 @@ public class KafkaIntegrationConfig {
                                              ServiceActivatingHandler handleTracingMessages,
                                              KafkaTracingProperties tracingProperties) {
         return IntegrationFlow.from(
-                    Kafka.inboundGateway(
-                            factory.createContainer(Optional.ofNullable(tracingProperties.tracingTopics).stream().flatMap(Collection::stream).toArray(String[]::new)),
-                            kafkaTemplate
-                    )
+                        Kafka.inboundGateway(
+                                        factory.createContainer(
+                                                Optional.ofNullable(tracingProperties.tracingTopics).stream()
+                                                        .flatMap(Collection::stream).toArray(String[]::new)
+                                        ),
+                                        kafkaTemplate
+                                )
+                                .replyChannel("messageChannel")
                 )
                 .handle(handleTracingMessages)
                 .get();

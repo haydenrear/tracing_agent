@@ -24,6 +24,7 @@ public class HttpIntegrationConfig {
         return IntegrationFlow.from(
                     Http.inboundGateway(ArrayUtilUtilities.toArray(tracingProperties.path, String[]::new))
                         .requestMapping(r -> ArrayUtilUtilities.toArray(tracingProperties.methods, HttpMethod[]::new))
+                            .replyChannel(IntegrationConfig.MESSAGE_CHANNEL)
                 )
                 .handle(handleTracingMessages)
                 .get();

@@ -2,18 +2,19 @@ package com.hayden.tracing_agent.messaging.support;
 
 import com.hayden.tracing_agent.messaging.TracingBroadcaster;
 import com.hayden.tracing_agent.model.TracingMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
-import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Sinks;
 
 @Component
+@Slf4j
 public class TracingBroadcasterHandle implements TracingBroadcaster {
 
     private final Sinks.Many<TracingMessage> tracingMessages = Sinks.many().multicast().directAllOrNothing();
 
     public void next(TracingMessage tracingMessage) {
-        tracingMessages.emitNext(tracingMessage, (signalType, emitResult) -> false);
+        tracingMessages.emitNext(tracingMessage, (signalType, emitResult) -> {log.error("error"); return false;});
     }
 
     @Override
@@ -21,8 +22,4 @@ public class TracingBroadcasterHandle implements TracingBroadcaster {
         return tracingMessages.asFlux();
     }
 
-    @Override
-    public TracingMessage processMessage(Message<?> message) {
-        return this.processMessage(message);
-    }
 }
