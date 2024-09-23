@@ -1,3 +1,5 @@
+import com.hayden.haydenbomplugin.BuildSrcVersionCatalogCollector
+
 plugins {
     id("com.hayden.no-main-class")
     id("com.hayden.messaging")
@@ -8,17 +10,19 @@ plugins {
 
 tasks.register("prepareKotlinBuildScriptModel")
 
+val vC = project.extensions.getByType(BuildSrcVersionCatalogCollector::class.java)
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-docker-compose")
     implementation("org.springframework.boot:spring-boot-starter-web")
 
-    implementation("io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:2.1.0-alpha")
-    implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-api:2.1.0")
-    implementation("io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter:1.22.1-alpha")
-    implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.1.0")
-    implementation("io.opentelemetry.javaagent:opentelemetry-javaagent:2.0.0")
-    implementation("io.opentelemetry.instrumentation:opentelemetry-jdbc:2.1.0-alpha")
+    vC.bundles.opentelemetryBundle.inBundle()
+        .map { implementation(it) }
+
+    implementation("io.opentelemetry.javaagent:opentelemetry-javaagent:2.8.0")
+
     implementation("io.micrometer:context-propagation:1.1.1")
+
     testImplementation("org.springframework.experimental.boot:spring-boot-testjars:0.0.1")
     testImplementation("org.springframework.experimental.boot:spring-boot-testjars:0.0.1") {
         capabilities {
