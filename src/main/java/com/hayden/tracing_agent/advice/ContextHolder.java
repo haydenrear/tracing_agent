@@ -1,7 +1,7 @@
 package com.hayden.tracing_agent.advice;
 
-import com.hayden.tracing_apt.observation_aspects.MonitoringTypes;
-import com.hayden.tracing_apt.observation_aspects.ObservationBehavior;
+import com.hayden.tracing_aspect.observation_aspects.MonitoringTypes;
+import com.hayden.tracing_aspect.observation_aspects.ObservationBehavior;
 import com.hayden.tracing_agent.service.DynamicTracingService;
 import com.hayden.utilitymodule.stream.StreamUtil;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;

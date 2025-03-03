@@ -1,8 +1,8 @@
 package com.hayden.tracing_agent.advice;
 
 import com.hayden.tracing_apt.flags.TracingFlags;
-import com.hayden.tracing_apt.observation_aspects.ObservationBehavior;
-import com.hayden.tracing_apt.observation_aspects.ObservationUtility;
+import com.hayden.tracing_aspect.observation_aspects.ObservationBehavior;
+import com.hayden.tracing_aspect.observation_aspects.ObservationUtility;
 import com.hayden.utilitymodule.MapFunctions;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.asm.Advice;
