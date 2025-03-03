@@ -36,10 +36,13 @@ public class AgentAdvice {
                 new ObservationBehavior.AgentObservationArgs(
                         List.of(),
                         new ObservationUtility.AdviceJoinPoint(
-                                new ObservationUtility.Advice(origin.getName(), ObservationUtility.JoinPointAction.Enter, ObservationUtility.JoinPointType.Agent),
+                                new ObservationUtility.Advice(
+                                        origin.getName(),
+                                        ObservationUtility.JoinPointAction.Enter,
+                                        ObservationUtility.JoinPointType.Agent),
                                 getArgs(arguments, origin)
-                        )
-                ));
+                        )));
+
         return null;
     }
 
@@ -53,10 +56,12 @@ public class AgentAdvice {
                 new ObservationBehavior.AgentObservationArgs(
                         List.of(),
                         new ObservationUtility.AdviceJoinPoint(
-                                new ObservationUtility.Advice(origin.getName(), ObservationUtility.JoinPointAction.Exit, ObservationUtility.JoinPointType.Agent),
+                                new ObservationUtility.Advice(
+                                        origin.getName(),
+                                        ObservationUtility.JoinPointAction.Exit,
+                                        ObservationUtility.JoinPointType.Agent),
                                 getArgs(arguments, origin)
-                        )
-                ));
+                        )));
     }
 
     public static Map<String, ?> getArgs(Object[] args, Method method)  {
