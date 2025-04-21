@@ -49,7 +49,7 @@ dependencies {
     implementation("net.bytebuddy:byte-buddy-agent:1.14.12")
 
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
+//    developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     annotationProcessor("org.projectlombok:lombok")
 
