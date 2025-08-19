@@ -1,6 +1,6 @@
 package com.hayden.tracing_agent;
 
-import com.hayden.tracing_apt.NoAgent;
+//import com.hayden.tracing_apt.NoAgent;
 import com.hayden.tracing_agent.advice.AgentAdvice;
 import com.hayden.tracing_agent.advice.ContextHolder;
 import com.hayden.tracing_agent.service.DynamicTracingService;
@@ -45,23 +45,23 @@ public class TracingAgent {
     public static void instrumentClass(String className, @Nullable String methodName) {
         log.info("Instrumenting class {}.", className);
         var c = Class.forName(className);
-        Optional.ofNullable(methodName)
-                .map(m -> ElementMatchers.not(ElementMatchers.isAnnotatedWith(NoAgent.class))
-                        .and(named(m))
-                )
-                .ifPresentOrElse(
-                        methodMatcher -> {
-                            try (var b = new ByteBuddy()
-                                    .redefine(c)
-                                    .visit(Advice.to(AgentAdvice.class).on(methodMatcher))
-                                    .make()) {
-                                b.load(c.getClassLoader(), ClassReloadingStrategy.of(byteBuddyInstrumentation));
-                            } catch (Exception e) {
-                                log.error("Error instrumenting class: {}.", e.getMessage());
-                            }
-                        },
-                        () -> log.error("could not instrument class, no method name provided.")
-                );
+//        Optional.ofNullable(methodName)
+//                .map(m -> ElementMatchers.not(ElementMatchers.isAnnotatedWith(NoAgent.class))
+//                        .and(named(m))
+//                )
+//                .ifPresentOrElse(
+//                        methodMatcher -> {
+//                            try (var b = new ByteBuddy()
+//                                    .redefine(c)
+//                                    .visit(Advice.to(AgentAdvice.class).on(methodMatcher))
+//                                    .make()) {
+//                                b.load(c.getClassLoader(), ClassReloadingStrategy.of(byteBuddyInstrumentation));
+//                            } catch (Exception e) {
+//                                log.error("Error instrumenting class: {}.", e.getMessage());
+//                            }
+//                        },
+//                        () -> log.error("could not instrument class, no method name provided.")
+//                );
     }
 
 

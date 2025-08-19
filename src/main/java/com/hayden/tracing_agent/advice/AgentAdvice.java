@@ -1,6 +1,6 @@
 package com.hayden.tracing_agent.advice;
 
-import com.hayden.tracing_apt.flags.TracingFlags;
+//import com.hayden.tracing_apt.flags.TracingFlags;
 import com.hayden.tracing_aspect.observation_aspects.ObservationBehavior;
 import com.hayden.tracing_aspect.observation_aspects.ObservationUtility;
 import com.hayden.utilitymodule.MapFunctions;
@@ -18,11 +18,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AgentAdvice {
 
     public static ApplicationContext applicationContext;
-    public static TracingFlags tracingFlags;
+//    public static TracingFlags tracingFlags;
 
     public static void setApplicationContext(ApplicationContext ctx) {
         applicationContext = ctx;
-        tracingFlags = ctx.getBean(TracingFlags.class);
+//        tracingFlags = ctx.getBean(TracingFlags.class);
     }
 
     @Advice.OnMethodEnter

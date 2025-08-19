@@ -57,10 +57,10 @@ dependencies {
 
     implementation(project(":utilitymodule"))
 
-    implementation(project(":tracing_apt"))
-    annotationProcessor(project(":tracing_apt")) {
-        exclude("org.junit")
-    }
+//    implementation(project(":tracing_apt"))
+//    annotationProcessor(project(":tracing_apt")) {
+//        exclude("org.junit")
+//    }
 
     implementation("org.springframework.boot:spring-boot-starter-integration")
     implementation("org.springframework.integration:spring-integration-kafka")
