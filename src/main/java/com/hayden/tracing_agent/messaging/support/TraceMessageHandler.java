@@ -30,7 +30,7 @@ public class TraceMessageHandler implements MessageProcessor<String> {
                     return "Appended event.";
                 })
                 .orElseGet(() -> {
-                    String errorMessage = "Received unknown message on tracing message handler %s."
+                    String errorMessage = "Received unknown getMessage on tracing getMessage handler %s."
                             .formatted(message.getPayload().getClass().getSimpleName());
                     log.warn(errorMessage);
                     return errorMessage;
