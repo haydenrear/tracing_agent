@@ -19,9 +19,7 @@ dependencies {
     vC.bundles.opentelemetryBundle.inBundle()
         .map { implementation(it) }
 
-    implementation("io.opentelemetry.javaagent:opentelemetry-javaagent:2.8.0")
-
-    implementation("io.micrometer:context-propagation:1.1.1")
+    implementation("io.opentelemetry.javaagent:opentelemetry-javaagent:2.0.0")
 
     testImplementation("org.springframework.experimental.boot:spring-boot-testjars:0.0.1")
     testImplementation("org.springframework.experimental.boot:spring-boot-testjars:0.0.1") {
@@ -29,10 +27,6 @@ dependencies {
             requireCapability("org.springframework.experimental.boot:spring-boot-testjars-maven")
         }
     }
-
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
-    runtimeOnly("io.micrometer:micrometer-core")
-    runtimeOnly("io.micrometer:micrometer-registry-otlp")
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
